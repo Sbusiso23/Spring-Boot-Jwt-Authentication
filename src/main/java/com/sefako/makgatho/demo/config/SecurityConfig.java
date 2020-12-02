@@ -8,8 +8,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.sefako.makgatho.demo.filters.JwtRequestFilter;
 import com.sefako.makgatho.demo.services.MyUserDetailsService;
 
 @Configuration
@@ -19,6 +22,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	@Autowired
 	MyUserDetailsService userDetailsService;
 	
+	@Autowired
+	JwtRequestFilter jwtRequestFilter;
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception{
 		http
@@ -26,7 +32,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 			.disable()
 			.authorizeRequests()
 			.antMatchers("/register", "/authenticate").permitAll()
-			.anyRequest().authenticated();
+			.anyRequest().authenticated()
+			.and()
+			.sessionManagement()
+			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+	
+		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 	
 	@Override

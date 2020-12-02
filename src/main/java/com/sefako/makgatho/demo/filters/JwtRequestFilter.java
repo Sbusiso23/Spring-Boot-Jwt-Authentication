@@ -1,4 +1,4 @@
-package com.sefako.makgatho.demo.config;
+package com.sefako.makgatho.demo.filters;
 
 import java.io.IOException;
 
@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.sefako.makgatho.demo.config.JwtTokenUtil;
 import com.sefako.makgatho.demo.services.MyUserDetailsService;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -65,7 +66,7 @@ public class JwtRequestFilter extends OncePerRequestFilter{
 			}
 		}
 		
-//		chain.doFilter(request, response);
+		filterChain.doFilter(request, response);
 	}
 	
 	

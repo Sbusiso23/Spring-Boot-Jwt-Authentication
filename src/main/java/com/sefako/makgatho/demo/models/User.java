@@ -19,7 +19,6 @@ public class User {
 	private String name;
 	private String email;
 	private String password;
-//	private boolean isEnabled;
 	
 	@ManyToOne()
 	@JoinColumn(name="role_id")
@@ -37,10 +36,6 @@ public class User {
 		this.password = password;
 	}
 	
-//	public void setEnabled(boolean isEnabled) {
-//		this.isEnabled = isEnabled;
-//	}
-	
 	public void setRole(Role role) {
 		this.role = role;
 	}
@@ -56,10 +51,6 @@ public class User {
 	public String getPassword() {
 		return this.password;
 	}
-	
-//	public boolean getEnabled() {
-//		return this.isEnabled;
-//	}
 	
 	public Role getRole() {
 		return this.role;
