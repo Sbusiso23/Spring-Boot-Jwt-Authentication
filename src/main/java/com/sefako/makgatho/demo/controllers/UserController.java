@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.sefako.makgatho.demo.config.JwtTokenUtil;
 import com.sefako.makgatho.demo.models.AuthenticationRequest;
@@ -36,14 +37,14 @@ public class UserController {
 	@Autowired
 	AuthenticationManager authManager;
 	
-	@PostMapping("/authenticate")
+	@PostMapping(path="/authenticate", consumes="application/json")
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest request) throws Exception
 	{
 		try {
 			authManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 			
 		} catch (BadCredentialsException e) {
-			throw new Exception("Incorrect email or password");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect email or password", e);
 		}
 		
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
@@ -55,6 +56,28 @@ public class UserController {
 		
 		return (ResponseEntity<?>) ResponseEntity.ok(response);
 	}
+	
+	
+	@PostMapping(path="/authenticate", consumes="application/x-www-form-urlencoded")
+	public ResponseEntity<?> createAuthToken(AuthenticationRequest request) throws Exception
+	{
+		try {
+			authManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+			
+		} catch (BadCredentialsException e) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect email or password", e);
+		}
+		
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+		
+		String jwtToken = jwtTokenUtil.generateToken(userDetails);
+		
+		AuthenticationResponse response = new AuthenticationResponse();
+		response.setJwtToken(jwtToken);
+		
+		return (ResponseEntity<?>) ResponseEntity.ok(response);
+	}
+	
 	
 	@PostMapping("/register")
 	public ResponseEntity<String> register(@RequestBody User user)
